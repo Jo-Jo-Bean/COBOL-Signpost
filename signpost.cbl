@@ -41,6 +41,13 @@
            
            01 REPLAY PIC X.
            01 GAME-DONE PIC 9.
+
+           01 SEED PIC 9(3).
+           01 RAND PIC 9V9(3).
+           01 NOW.
+               05 SECONDS PIC 99.
+               05 CS PIC 99.
+
       *
        PROCEDURE DIVISION.
        MAIN-PROGRAM.
@@ -50,11 +57,18 @@
            STOP RUN.
 
        BUILD-FIELD.
+           MOVE FUNCTION CURRENT-DATE(13:16) TO NOW.
+           COMPUTE SEED = SECONDS * CS.
+           COMPUTE RAND = FUNCTION RANDOM(SEED).
            MOVE 1 TO Y
            PERFORM UNTIL Y > FIELD-SIZE
                MOVE 1 TO X
                    PERFORM UNTIL X > FIELD-SIZE
                        COMPUTE SEQ(X, Y) = X + ((Y - 1) * FIELD-SIZE)
+                       COMPUTE RAND = FUNCTION RANDOM
+                       MULTIPLY RAND BY ARROW-MAP-SIZE 
+                           GIVING ARROW-SET(X, Y)
+                           ROUNDED MODE IS TOWARD-GREATER
                        ADD 1 TO X
                    END-PERFORM
                ADD 1 TO Y
